@@ -77,7 +77,7 @@ To get the full scroll-collapse behavior (search bar shrinks into a pill, expand
 ## Run the demo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/collapsible-search.git
+git clone https://github.com/Imba-Sharik/collapsible-search.git
 cd collapsible-search
 npm install
 npm run dev

@@ -75,7 +75,7 @@ export function MySearch() {
 ## Запуск демо
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/collapsible-search.git
+git clone https://github.com/Imba-Sharik/collapsible-search.git
 cd collapsible-search
 npm install
 npm run dev

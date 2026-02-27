@@ -4,8 +4,9 @@
 
 Airbnb-style search header that collapses into a compact pill on scroll.
 
-<!-- TODO: replace with actual GIF -->
-<!-- ![Demo](./demo.gif) -->
+[Live Demo](https://collapsible-search.vercel.app/)
+
+![Demo](./public/image.png)
 
 ## Install
 

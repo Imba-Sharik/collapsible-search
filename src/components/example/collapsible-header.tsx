@@ -30,13 +30,11 @@ export function CollapsibleHeader({
   const labelsRef = useRef(labels)
   const dropdownOpenRef = useRef(false)
   const dialogFiltersRef = useRef(false)
-  const mainRef = useRef<Element | null>(null)
 
   const reportDropdownOpen = useCallback((open: boolean) => {
     dropdownOpenRef.current = open
     if (!open) {
-      const main = mainRef.current
-      if (main && main.scrollTop > 10 && labelsRef.current.length > 0) {
+      if (window.scrollY > 10 && labelsRef.current.length > 0) {
         setCollapsed(true)
       }
     }
@@ -48,8 +46,7 @@ export function CollapsibleHeader({
     if (hasFilters && labelsRef.current.length > 0) {
       setCollapsed(true)
     } else if (!hasFilters) {
-      const main = mainRef.current
-      if (main && main.scrollTop <= 10) {
+      if (window.scrollY <= 10) {
         setCollapsed(false)
       }
     }
@@ -78,21 +75,17 @@ export function CollapsibleHeader({
 
   // Scroll: collapse on scroll down, expand at top
   useEffect(() => {
-    const main = document.querySelector("main")
-    if (!main) return
-    mainRef.current = main
-
     const onScroll = () => {
       if (dropdownOpenRef.current) return
-      if (main.scrollTop > 10) {
+      if (window.scrollY > 10) {
         if (labelsRef.current.length > 0) setCollapsed(true)
       } else if (!dialogFiltersRef.current) {
         setCollapsed(false)
       }
     }
 
-    main.addEventListener("scroll", onScroll, { passive: true })
-    return () => main.removeEventListener("scroll", onScroll)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
   return (

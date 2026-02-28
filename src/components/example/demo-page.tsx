@@ -41,8 +41,7 @@ export function DemoPage() {
         nav={NAV_LINKS}
       />
 
-      {/* Main must be scrollable for the header scroll listener */}
-      <main className="fixed inset-0 top-0 overflow-y-auto pt-34">
+      <main className="pt-34">
         <div className="mx-auto max-w-5xl px-4 py-8">
           <div className="mb-8">
             <h1 className="text-2xl font-bold">

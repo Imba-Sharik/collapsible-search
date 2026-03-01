@@ -6,6 +6,8 @@ import { CompactSearchBar, SearchBarContext } from "@/components/collapsible-sea
 interface CollapsibleHeaderProps {
   /** The expanded search bar (e.g. <ExampleSearch />) */
   search: ReactNode
+  /** Shown next to the compact pill when hasActiveFilters or hasDialogFilters (e.g. <ExampleFiltersDialog />) */
+  filtersSlot?: ReactNode
   /** Logo text or element */
   logo?: ReactNode
   /** Navigation links */
@@ -18,6 +20,7 @@ interface CollapsibleHeaderProps {
  */
 export function CollapsibleHeader({
   search,
+  filtersSlot,
   logo = "Logo",
   nav,
 }: CollapsibleHeaderProps) {
@@ -120,13 +123,14 @@ export function CollapsibleHeader({
             </nav>
 
             <div
-              className={`absolute transition-all duration-300 ease-out ${
+              className={`absolute hidden md:flex items-center gap-2 transition-all duration-300 ease-out ${
                 isCollapsed
                   ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
                   : "pointer-events-none translate-y-6 scale-[1.4] opacity-0"
               }`}
             >
               <CompactSearchBar labels={labels} onExpand={expand} />
+              {(hasActiveFilters || hasDialogFilters) && filtersSlot}
             </div>
           </div>
 
@@ -136,10 +140,10 @@ export function CollapsibleHeader({
         {/* Bottom row: expanded search */}
         <div
           className={`grid transition-[grid-template-rows] duration-300 ${
-            isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]"
+            isCollapsed ? "grid-rows-[1fr] md:grid-rows-[0fr]" : "grid-rows-[1fr]"
           }`}
         >
-          <div className={isCollapsed ? "overflow-hidden" : ""}>
+          <div className={isCollapsed ? "md:overflow-hidden" : ""}>
             <div className="mx-auto flex max-w-5xl justify-center px-4 py-4">
               {search}
             </div>

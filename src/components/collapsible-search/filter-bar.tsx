@@ -15,7 +15,7 @@ import { Search, X } from "lucide-react";
 
 // --- Types ---
 
-interface FilterBarItemProps {
+export interface FilterBarItemProps {
   label: string;
   value: string | null;
   placeholder: string;

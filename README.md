@@ -2,7 +2,7 @@
 
 [Русская версия](README.ru.md)
 
-Airbnb-style search header that collapses into a compact pill on scroll.
+Airbnb-style search header that collapses into a compact pill on scroll. Includes mobile full-screen filters and an advanced filters dialog.
 
 [Live Demo](https://collapsible-search.vercel.app/)
 
@@ -12,28 +12,32 @@ Airbnb-style search header that collapses into a compact pill on scroll.
 
 Requires React 18+, Tailwind CSS v4, and [shadcn/ui](https://ui.shadcn.com) CSS variables.
 
-**1.** Install the only external dependency:
+**1.** Install dependencies:
 
 ```bash
-npm i lucide-react
+npm i lucide-react radix-ui
 ```
 
-**2.** Copy these 3 files into your project:
+**2.** Copy these 5 files into your project:
 
 ```
 components/collapsible-search/
-  search-bar-context.tsx   ← context for collapse/expand state
-  filter-bar.tsx           ← the search bar with filter dropdowns
-  compact-search-bar.tsx   ← the small pill shown when collapsed
+  search-bar-context.tsx    ← context for collapse/expand state
+  filter-bar.tsx            ← desktop search bar with filter dropdowns
+  compact-search-bar.tsx    ← compact pill shown when collapsed
+  mobile-filter-bar.tsx     ← mobile full-screen accordion dialog
+  filters-dialog.tsx        ← advanced filters modal (uses radix-ui Dialog)
 ```
 
 Done. You own the code — customize freely.
 
 ## Usage
 
+### Basic (desktop only)
+
 ```tsx
 import { useState } from "react"
-import { FilterBar } from "@/components/collapsible-search/filter-bar"
+import { FilterBar } from "@/components/collapsible-search"
 
 const CATEGORIES = ["Technology", "Design", "Marketing", "Business"]
 
@@ -67,13 +71,80 @@ export function MySearch() {
 
 Add more `<FilterBar.Item>` for each filter. When the user picks a value, call `next()` to auto-advance to the next filter.
 
-### Collapsible header
+### Desktop + Mobile
 
-To get the full scroll-collapse behavior (search bar shrinks into a pill, expands back on scroll-to-top), see the working example in [`src/components/example/`](src/components/example/):
+`FilterBar.Item` elements are shared between desktop and mobile — define them as an **array** (not a Fragment) so `React.Children.toArray` can iterate them:
 
-- [`collapsible-header.tsx`](src/components/example/collapsible-header.tsx) — header with scroll listener, compact pill, expand/collapse
-- [`example-search.tsx`](src/components/example/example-search.tsx) — 3 filters wired to the header via `useSearchBar()`
+```tsx
+import { FilterBar, MobileFilterBar } from "@/components/collapsible-search"
+
+export function MySearch() {
+  const [category, setCategory] = useState<string | null>(null)
+
+  const filterItems = [
+    <FilterBar.Item key="category" label="Category" value={category}
+      placeholder="Any category" onClear={() => setCategory(null)}>
+      {(next) => /* your dropdown content */}
+    </FilterBar.Item>,
+    // more items...
+  ]
+
+  return (
+    <div className="w-full">
+      {/* Desktop */}
+      <div className="hidden md:block">
+        <FilterBar onSearch={handleSearch}>{filterItems}</FilterBar>
+      </div>
+
+      {/* Mobile */}
+      <MobileFilterBar onSearch={handleSearch}>{filterItems}</MobileFilterBar>
+    </div>
+  )
+}
+```
+
+### Advanced filters dialog
+
+`FiltersDialog` is a trigger button + modal. Pass any content as children — price sliders, checkboxes, date pickers, etc.:
+
+```tsx
+import { FiltersDialog } from "@/components/collapsible-search"
+
+function MyFiltersDialog() {
+  const [rating, setRating] = useState<string | null>(null)
+  const filterCount = rating ? 1 : 0
+
+  return (
+    <FiltersDialog
+      filterCount={filterCount}
+      onReset={() => setRating(null)}
+      title="More filters"
+      resetLabel="Reset"
+      applyLabel="Show results"
+    >
+      {/* your advanced filter controls */}
+    </FiltersDialog>
+  )
+}
+```
+
+### Full collapsible header
+
+For the full scroll-collapse behavior with all components wired together, see the working example in [`src/components/example/`](src/components/example/):
+
+- [`collapsible-header.tsx`](src/components/example/collapsible-header.tsx) — header with scroll listener, compact pill, expand/collapse. Accepts `filtersSlot` — shown **next to the pill** when `hasActiveFilters || hasDialogFilters`
+- [`example-search.tsx`](src/components/example/example-search.tsx) — `ExampleSearch` (FilterBar + MobileFilterBar) and `ExampleFiltersDialog` (advanced filters with own state)
 - [`demo-page.tsx`](src/components/example/demo-page.tsx) — full page putting it all together
+
+```tsx
+// demo-page.tsx pattern:
+<CollapsibleHeader
+  search={<ExampleSearch />}
+  filtersSlot={<ExampleFiltersDialog />}  // appears next to pill after search
+  logo="My App"
+  nav={<nav>...</nav>}
+/>
+```
 
 ## Run the demo
 
@@ -113,6 +184,29 @@ Open [http://localhost:3000](http://localhost:3000) and scroll down.
 | `flex` | `number` | `1` | Width ratio relative to other items |
 | `children` | `(next: () => void) => ReactNode` | required | Dropdown content. Call `next()` to advance. |
 
+> **Note:** When sharing filter items between `FilterBar` and `MobileFilterBar`, define them as an array `[<FilterBar.Item .../>, ...]`, not a `<>...</>` fragment. React.Children.toArray does not flatten fragments.
+
+### MobileFilterBar
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `FilterBar.Item[]` | required | Same items as FilterBar — shared between both |
+| `onSearch` | `() => void` | — | Called when user taps the search button |
+| `searchLabel` | `string` | `"Search"` | Search button text |
+| `clearLabel` | `string` | `"Clear all"` | Clear all button text |
+
+### FiltersDialog
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `ReactNode` | required | Advanced filter controls |
+| `filterCount` | `number` | `0` | Number of active advanced filters — drives the badge |
+| `onReset` | `() => void` | — | Reset all advanced filters |
+| `triggerLabel` | `string` | `"Filters"` | Trigger button text |
+| `title` | `string` | `"Filters"` | Dialog title |
+| `resetLabel` | `string` | `"Reset all"` | Reset button text |
+| `applyLabel` | `string` | `"Apply"` | Apply button text |
+
 ### CompactSearchBar
 
 | Prop | Type | Description |
@@ -122,16 +216,28 @@ Open [http://localhost:3000](http://localhost:3000) and scroll down.
 
 ### useSearchBar()
 
-Hook for connecting your search to a collapsible header.
+Hook for connecting your search components to a collapsible header.
 
 | Field | Type | Description |
 |---|---|---|
 | `isCollapsed` | `boolean` | Is the bar collapsed? |
+| `hasActiveFilters` | `boolean` | Were main filters active at last collapse? |
+| `hasDialogFilters` | `boolean` | Are advanced (dialog) filters active? |
 | `expandIndex` | `number \| null` | Filter to open on expand |
 | `collapse(labels, hasFilters)` | `fn` | Collapse with these labels |
 | `expand(index?)` | `fn` | Expand, optionally open a filter |
-| `updateLabels(labels)` | `fn` | Update pill labels |
+| `updateLabels(labels)` | `fn` | Update pill labels without collapsing |
 | `reportDropdownOpen(open)` | `fn` | Block scroll-collapse while dropdown is open |
+| `reportDialogFilters(hasFilters)` | `fn` | Notify header that advanced filters dialog closed |
+
+### CollapsibleHeader (example)
+
+| Prop | Type | Description |
+|---|---|---|
+| `search` | `ReactNode` | The expanded search area (FilterBar + MobileFilterBar) |
+| `filtersSlot` | `ReactNode` | Shown next to compact pill when `hasActiveFilters \|\| hasDialogFilters` |
+| `logo` | `ReactNode` | Logo element |
+| `nav` | `ReactNode` | Navigation links |
 
 </details>
 

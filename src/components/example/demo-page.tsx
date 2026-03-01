@@ -1,7 +1,7 @@
 "use client"
 
 import { CollapsibleHeader } from "./collapsible-header"
-import { ExampleSearch } from "./example-search"
+import { ExampleSearch, ExampleFiltersDialog } from "./example-search"
 
 const NAV_LINKS = (
   <>
@@ -37,6 +37,7 @@ export function DemoPage() {
     <div className="min-h-screen">
       <CollapsibleHeader
         search={<ExampleSearch />}
+        filtersSlot={<ExampleFiltersDialog />}
         logo="Collapsible Search"
         nav={NAV_LINKS}
       />

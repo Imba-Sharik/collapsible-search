@@ -18,15 +18,19 @@ Requires React 18+, Tailwind CSS v4, and [shadcn/ui](https://ui.shadcn.com) CSS 
 npm i lucide-react radix-ui
 ```
 
-**2.** Copy these 5 files into your project:
+**2.** Copy the widget folder into your project:
 
 ```
-components/collapsible-search/
-  search-bar-context.tsx    ← context for collapse/expand state
-  filter-bar.tsx            ← desktop search bar with filter dropdowns
-  compact-search-bar.tsx    ← compact pill shown when collapsed
-  mobile-filter-bar.tsx     ← mobile full-screen accordion dialog
-  filters-dialog.tsx        ← advanced filters modal (uses radix-ui Dialog)
+widgets/collapsible-search/
+  ui/
+    filter-bar.tsx            ← desktop search bar with filter dropdowns
+    compact-search-bar.tsx    ← compact pill shown when collapsed
+    mobile-filter-bar.tsx     ← mobile full-screen accordion dialog
+    filters-dialog.tsx        ← advanced filters modal (uses radix-ui Dialog)
+    collapsible-header.tsx    ← header with scroll-collapse behavior
+  model/
+    search-bar-context.tsx    ← context for collapse/expand state
+  index.ts
 ```
 
 Done. You own the code — customize freely.
@@ -37,7 +41,7 @@ Done. You own the code — customize freely.
 
 ```tsx
 import { useState } from "react"
-import { FilterBar } from "@/components/collapsible-search"
+import { FilterBar } from "@/widgets/collapsible-search"
 
 const CATEGORIES = ["Technology", "Design", "Marketing", "Business"]
 
@@ -76,7 +80,7 @@ Add more `<FilterBar.Item>` for each filter. When the user picks a value, call `
 `FilterBar.Item` elements are shared between desktop and mobile — define them as an **array** (not a Fragment) so `React.Children.toArray` can iterate them:
 
 ```tsx
-import { FilterBar, MobileFilterBar } from "@/components/collapsible-search"
+import { FilterBar, MobileFilterBar } from "@/widgets/collapsible-search"
 
 export function MySearch() {
   const [category, setCategory] = useState<string | null>(null)
@@ -108,7 +112,7 @@ export function MySearch() {
 `FiltersDialog` is a trigger button + modal. Pass any content as children — price sliders, checkboxes, date pickers, etc.:
 
 ```tsx
-import { FiltersDialog } from "@/components/collapsible-search"
+import { FiltersDialog } from "@/widgets/collapsible-search"
 
 function MyFiltersDialog() {
   const [rating, setRating] = useState<string | null>(null)
@@ -132,7 +136,7 @@ function MyFiltersDialog() {
 
 For the full scroll-collapse behavior with all components wired together, see the working example in [`src/components/example/`](src/components/example/):
 
-- [`collapsible-header.tsx`](src/components/example/collapsible-header.tsx) — header with scroll listener, compact pill, expand/collapse. Accepts `filtersSlot` — shown **next to the pill** when `hasActiveFilters || hasDialogFilters`
+- [`collapsible-header.tsx`](src/widgets/collapsible-search/ui/collapsible-header.tsx) — header with scroll listener, compact pill, expand/collapse. Accepts `filtersSlot` — shown **next to the pill** when `hasActiveFilters || hasDialogFilters`
 - [`example-search.tsx`](src/components/example/example-search.tsx) — `ExampleSearch` (FilterBar + MobileFilterBar) and `ExampleFiltersDialog` (advanced filters with own state)
 - [`demo-page.tsx`](src/components/example/demo-page.tsx) — full page putting it all together
 
@@ -194,6 +198,14 @@ Open [http://localhost:3000](http://localhost:3000) and scroll down.
 | `onSearch` | `() => void` | — | Called when user taps the search button |
 | `searchLabel` | `string` | `"Search"` | Search button text |
 | `clearLabel` | `string` | `"Clear all"` | Clear all button text |
+| `advancedFilters` | `ReactNode` | — | Advanced filters content rendered in a bottom sheet |
+| `advancedFiltersCount` | `number` | `0` | Number of active advanced filters — drives badge + button visibility |
+| `advancedFiltersTitle` | `string` | `"Filters"` | Bottom sheet title |
+| `advancedFiltersResetLabel` | `string` | `"Reset all"` | Reset button text |
+| `advancedFiltersApplyLabel` | `string` | `"Apply"` | Apply button text |
+| `onAdvancedFiltersReset` | `() => void` | — | Reset all advanced filters |
+
+> The advanced filters button (SlidersHorizontal icon) appears next to the main pill trigger when main filters have a value or `advancedFiltersCount > 0`. It opens a bottom sheet dialog.
 
 ### FiltersDialog
 

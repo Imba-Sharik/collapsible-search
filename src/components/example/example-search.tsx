@@ -6,7 +6,7 @@ import {
   FiltersDialog,
   MobileFilterBar,
   useSearchBar,
-} from "@/components/collapsible-search"
+} from "@/widgets/collapsible-search"
 
 // --- Main filter data ---
 
@@ -118,6 +118,12 @@ export function ExampleSearch() {
   const [location, setLocation] = useState<string | null>(null)
   const [price, setPrice] = useState<string | null>(null)
 
+  // Mobile advanced filters — independent state from desktop ExampleFiltersDialog
+  // (safe because mobile and desktop are mutually exclusive via CSS breakpoints)
+  const [mobileRating, setMobileRating] = useState<string | null>(null)
+  const [mobileSort, setMobileSort] = useState<string | null>(null)
+  const mobileAdvancedCount = [mobileRating, mobileSort].filter(Boolean).length
+
   const { collapse, updateLabels, expandIndex, reportDropdownOpen } =
     useSearchBar()
 
@@ -218,7 +224,25 @@ export function ExampleSearch() {
       </div>
 
       {/* Mobile */}
-      <MobileFilterBar onSearch={handleSearch}>
+      <MobileFilterBar
+        onSearch={handleSearch}
+        advancedFilters={
+          <AdvancedContent
+            rating={mobileRating}
+            setRating={setMobileRating}
+            sort={mobileSort}
+            setSort={setMobileSort}
+          />
+        }
+        advancedFiltersCount={mobileAdvancedCount}
+        onAdvancedFiltersReset={() => {
+          setMobileRating(null)
+          setMobileSort(null)
+        }}
+        advancedFiltersTitle="More filters"
+        advancedFiltersResetLabel="Reset"
+        advancedFiltersApplyLabel="Show results"
+      >
         {filterItems}
       </MobileFilterBar>
     </div>

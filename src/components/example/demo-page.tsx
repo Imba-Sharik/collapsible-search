@@ -1,6 +1,6 @@
 "use client"
 
-import { CollapsibleHeader } from "./collapsible-header"
+import { CollapsibleHeader } from "@/widgets/collapsible-search"
 import { ExampleSearch, ExampleFiltersDialog } from "./example-search"
 
 const NAV_LINKS = (

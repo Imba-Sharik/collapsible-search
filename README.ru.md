@@ -16,15 +16,19 @@
 npm i lucide-react radix-ui
 ```
 
-**2.** Скопируйте 5 файлов в свой проект:
+**2.** Скопируйте папку виджета в свой проект:
 
 ```
-components/collapsible-search/
-  search-bar-context.tsx    ← контекст для состояния collapse/expand
-  filter-bar.tsx            ← десктопная поисковая строка с фильтрами
-  compact-search-bar.tsx    ← компактная pill-кнопка в свёрнутом виде
-  mobile-filter-bar.tsx     ← мобильный полноэкранный аккордеон-диалог
-  filters-dialog.tsx        ← модал продвинутых фильтров (использует radix-ui Dialog)
+widgets/collapsible-search/
+  ui/
+    filter-bar.tsx            ← десктопная поисковая строка с фильтрами
+    compact-search-bar.tsx    ← компактная pill-кнопка в свёрнутом виде
+    mobile-filter-bar.tsx     ← мобильный полноэкранный аккордеон-диалог
+    filters-dialog.tsx        ← модал продвинутых фильтров (использует radix-ui Dialog)
+    collapsible-header.tsx    ← шапка с поведением collapse при скролле
+  model/
+    search-bar-context.tsx    ← контекст для состояния collapse/expand
+  index.ts
 ```
 
 Готово. Код ваш — меняйте как угодно.
@@ -35,7 +39,7 @@ components/collapsible-search/
 
 ```tsx
 import { useState } from "react"
-import { FilterBar } from "@/components/collapsible-search"
+import { FilterBar } from "@/widgets/collapsible-search"
 
 const CATEGORIES = ["Технологии", "Дизайн", "Маркетинг", "Бизнес"]
 
@@ -74,7 +78,7 @@ export function MySearch() {
 Элементы `FilterBar.Item` используются совместно для десктопной и мобильной версий — определяйте их как **массив** (не Fragment), чтобы `React.Children.toArray` мог их итерировать:
 
 ```tsx
-import { FilterBar, MobileFilterBar } from "@/components/collapsible-search"
+import { FilterBar, MobileFilterBar } from "@/widgets/collapsible-search"
 
 export function MySearch() {
   const [category, setCategory] = useState<string | null>(null)
@@ -106,7 +110,7 @@ export function MySearch() {
 `FiltersDialog` — кнопка-триггер + модал. Передайте любое содержимое через children — слайдеры цены, чекбоксы, датапикеры и т.д.:
 
 ```tsx
-import { FiltersDialog } from "@/components/collapsible-search"
+import { FiltersDialog } from "@/widgets/collapsible-search"
 
 function MyFiltersDialog() {
   const [rating, setRating] = useState<string | null>(null)
@@ -130,7 +134,7 @@ function MyFiltersDialog() {
 
 Для полного поведения со всеми компонентами смотрите рабочий пример в [`src/components/example/`](src/components/example/):
 
-- [`collapsible-header.tsx`](src/components/example/collapsible-header.tsx) — шапка со скролл-слушателем, pill, collapse/expand. Принимает `filtersSlot` — отображается **рядом с pill** при `hasActiveFilters || hasDialogFilters`
+- [`collapsible-header.tsx`](src/widgets/collapsible-search/ui/collapsible-header.tsx) — шапка со скролл-слушателем, pill, collapse/expand. Принимает `filtersSlot` — отображается **рядом с pill** при `hasActiveFilters || hasDialogFilters`
 - [`example-search.tsx`](src/components/example/example-search.tsx) — `ExampleSearch` (FilterBar + MobileFilterBar) и `ExampleFiltersDialog` (продвинутые фильтры со своим состоянием)
 - [`demo-page.tsx`](src/components/example/demo-page.tsx) — полная страница
 
@@ -192,6 +196,14 @@ npm run dev
 | `onSearch` | `() => void` | — | Вызывается при нажатии кнопки поиска |
 | `searchLabel` | `string` | `"Search"` | Текст кнопки поиска |
 | `clearLabel` | `string` | `"Clear all"` | Текст кнопки сброса |
+| `advancedFilters` | `ReactNode` | — | Содержимое продвинутых фильтров в нижнем шторе |
+| `advancedFiltersCount` | `number` | `0` | Количество активных продвинутых фильтров — бейдж и видимость кнопки |
+| `advancedFiltersTitle` | `string` | `"Filters"` | Заголовок нижнего штора |
+| `advancedFiltersResetLabel` | `string` | `"Reset all"` | Текст кнопки сброса |
+| `advancedFiltersApplyLabel` | `string` | `"Apply"` | Текст кнопки применения |
+| `onAdvancedFiltersReset` | `() => void` | — | Сброс всех продвинутых фильтров |
+
+> Кнопка продвинутых фильтров (иконка SlidersHorizontal) появляется рядом с основной pill, когда в основных фильтрах выбрано значение или `advancedFiltersCount > 0`. Открывает нижний шторный диалог.
 
 ### FiltersDialog
 

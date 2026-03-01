@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
-import { CompactSearchBar, SearchBarContext } from "@/components/collapsible-search"
+import { CompactSearchBar } from "./compact-search-bar"
+import { SearchBarContext } from "../model/search-bar-context"
 
 interface CollapsibleHeaderProps {
   /** The expanded search bar (e.g. <ExampleSearch />) */
@@ -113,7 +114,7 @@ export function CollapsibleHeader({
           {/* Center: nav or compact pill */}
           <div className="relative flex flex-1 items-center justify-center">
             <nav
-              className={`flex items-center gap-6 transition-opacity duration-300 ${
+              className={`hidden md:flex items-center gap-6 transition-opacity duration-300 ${
                 isCollapsed
                   ? "pointer-events-none opacity-0"
                   : "opacity-100"

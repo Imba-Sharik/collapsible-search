@@ -3,7 +3,7 @@
 import { useCallback, type ReactNode } from "react"
 import { SlidersHorizontal, X } from "lucide-react"
 import { Dialog } from "radix-ui"
-import { useSearchBar } from "./search-bar-context"
+import { useSearchBar } from "../model/search-bar-context"
 
 interface FiltersDialogProps {
   /** The dialog content — your advanced filter controls */
